@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <mvc:default-servlet-handler/>
+
+    <bean id="negotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+        <property name="ignoreAcceptHeader" value="true"/>
+        <property name="favorPathExtension" value="true"/>
+        <property name="defaultContentType" value="text/html"/>
+        <property name="favorParameter" value="true"/>
+        <property name="mediaTypes">
+            <map>
+                <entry key="xml" value="application/xml"/>
+                <entry key="json" value="text/plain"/>
+                <entry key="xls" value="application/vnd.ms-excel"/>
+            </map>
+        </property>
+    </bean>
+
+    <mvc:annotation-driven content-negotiation-manager="negotiationManager">
+        <mvc:message-converters register-defaults="false">
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <constructor-arg value="UTF-8"/>
+                <property name="writeAcceptCharset" value="false"/>
+            </bean>
+
+            <bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
+
+            <bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter4">
+                <property name="fastJsonConfig">
+                    <bean class="com.alibaba.fastjson.support.config.FastJsonConfig">
+                        <property name="dateFormat" value="yyyy-MM-dd HH:mm:ss"/>
+                        <property name="serializerFeatures">
+                            <array value-type="com.alibaba.fastjson.serializer.SerializerFeature">
+                                <value>PrettyFormat</value>
+                                <value>WriteDateUseDateFormat</value>
+                                <value>WriteMapNullValue</value>
+                                <value>WriteNullStringAsEmpty</value>
+                                <value>WriteNullNumberAsZero</value>
+                                <value>WriteNullBooleanAsFalse</value>
+                            </array>
+                        </property>
+                    </bean>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <!--<mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            &lt;!&ndash;<bean class="com.dnake.smart.interceptor.LoginInterceptor"/>&ndash;&gt;
+        </mvc:interceptor>
+    </mvc:interceptors>-->
+
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!--<bean class="com.dnake.smart.exception.CustomExceptionHandler"/>-->
+
+    <!--  <bean id="viewResolver" class="http.web.springmvc.HttpViewResolver">
+        <property name="contentType" value="text/html; charset=UTF-8"/>
+        <property name="prefix" value="/WEB-INF/views/"/>
+        <property name="suffix" value=".httl"/>
+    </bean>
+
+    &lt;!&ndash; 静态文件客户端缓存：60 * 60 * 24 * 10 &ndash;&gt;
+    <mvc:resources location="/public/" mapping="/public/**" cache-period="864000"/>
+
+    &lt;!&ndash; 定义无需Controller的url<->view直接映射 &ndash;&gt;
+    <mvc:view-controller path="/" view-name="index"/>
+    <mvc:view-controller path="/web/mashup-client" view-name="/web/mashup-client"/>-->
+
+    <!-- 将Controller抛出的异常转到特定View, 保持SiteMesh的装饰效果 -->
+    <!--<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="exceptionMappings">
+            <props>
+                <prop key="org.apache.shiro.authz.UnauthorizedException">error/403</prop>
+                <prop key="java.lang.Throwable">error/500</prop>
+            </props>
+        </property>
+    </bean>-->
+
+    <!--<mvc:annotation-driven>
+       <mvc:argument-resolvers>
+           <bean class=""/>
+       </mvc:argument-resolvers>
+   </mvc:annotation-driven>-->
+
+    <!-- 静态资源映射 -->
+    <!--<mvc:resources mapping="/resources/**" location="/webapp/" cache-period="31536000"/>-->
+
+    <!--<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <property name="mediaTypes">
+            <map>
+                <entry key="html" value="text/html"/>
+                <entry key="json" value="application/json"/>
+                <entry key="xml" value="application/xml"/>
+                <entry key="octet-stream" value="application/octet-stream"/>
+
+            </map>
+        </property>
+        <property name="viewResolvers">
+            <list>
+                <bean class="org.springframework.web.servlet.view.BeanNameViewResolver"/>
+                <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+                    <property name="prefix" value="/"/>
+                    <property name="suffix" value=".html"/>
+                </bean>
+            </list>
+        </property>
+        <property name="defaultViews">
+            <list>
+                <bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView"/>
+            </list>
+        </property>
+    </bean>-->
+
+    <!--<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        &lt;!&ndash; 非单个,total!!! &ndash;&gt;
+        <property name="maxUploadSize" value="8000000"/>
+    </bean>
+
+    &lt;!&ndash; SpringMVC在超出上传文件限制时，还没有进入到Controller方法中 &ndash;&gt;
+    <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="exceptionMappings">
+            <props>
+                <prop key="org.springframework.web.multipart.MaxUploadSizeExceededException">error/405</prop>
+                <prop key="java.lang.Throwable">error/500</prop>
+            </props>
+        </property>
+    </bean>-->
+    <!-- 控制器异常处理 -->
+    <!--<bean class="org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver"/>-->
+
+    <!--<bean id="viewResolver" class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">-->
+    <!--<property name="contentNegotiationManager" ref="negotiationManager"/>-->
+    <!--<property name="viewResolvers">-->
+    <!--<list>-->
+    <!--<bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">-->
+    <!--<property name="viewClass" value="org.springframework.web.servlet.view.freemarker.FreeMarkerView"/>-->
+    <!--<property name="viewNames" value=".ftl"/>-->
+    <!--<property name="contentType" value="text/html; charset=utf-8"/>-->
+    <!--<property name="cache" value="true"/>-->
+    <!--<property name="prefix" value=""/>-->
+    <!--<property name="suffix" value=""/>-->
+    <!--<property name="order" value="2"/>-->
+    <!--</bean>-->
+    <!--<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">-->
+    <!--<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>-->
+    <!--<property name="prefix" value="/WEB-INF/view/jsp/"/>-->
+    <!--<property name="suffix" value=".jsp"/>-->
+    <!--</bean>-->
+    <!--</list>-->
+    <!--</property>-->
+    <!--<property name="defaultViews">-->
+    <!--<list>-->
+    <!--<bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">-->
+    <!--&lt;!&ndash; <property name="extractValueFromSingleKeyModel" value="true"/> &ndash;&gt;-->
+    <!--<property name="prettyPrint" value="true"/>-->
+    <!--<property name="contentType" value="text/plain"/>-->
+    <!--</bean>-->
+    <!--<bean class="org.springframework.web.servlet.view.xml.MarshallingView">-->
+    <!--<constructor-arg ref="jaxb2Marshaller">-->
+
+    <!--</constructor-arg>-->
+    <!--</bean>-->
+    <!--<bean class="com.wonders.stpt.bid.controller.JXLExcelView"/>-->
+    <!--</list>-->
+    <!--</property>-->
+    <!--</bean>-->
+
+</beans>
