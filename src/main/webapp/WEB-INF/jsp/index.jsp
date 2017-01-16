@@ -8,9 +8,8 @@
 </head>
 
 <body>
-<div class="table-responsive" id="data">
-
-    <%--<table class="table table-striped table-bordered table-hover">
+<div>
+    <%--<table class="table table-hover">
         <thead>
         <tr>
             <th>#</th>
@@ -54,6 +53,9 @@
     </table>--%>
 </div>
 
+<div class="table-responsive" id="data">
+
+</div>
 <script src="js/grid.js"></script>
 </body>
 </html>

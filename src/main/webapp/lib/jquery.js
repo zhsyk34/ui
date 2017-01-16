@@ -291,10 +291,10 @@ jQuery.extend( {
 		// strings and numbers (primitives or objects)
 		// that can be coerced to finite numbers (gh-2662)
 		var type = jQuery.type( obj );
-		return ( type === "number" || type === "string" ) &&
+        return ( type === "index" || type === "string" ) &&
 
 			// parseFloat NaNs numeric-cast false positives ("")
-			// ...but misinterprets leading-number strings, particularly hex literals ("0x...")
+            // ...but misinterprets leading-index strings, particularly hex literals ("0x...")
 			// subtraction forces infinities to NaN
 			!isNaN( obj - parseFloat( obj ) );
 	},
@@ -539,7 +539,7 @@ function isArrayLike( obj ) {
 	}
 
 	return type === "array" || length === 0 ||
-		typeof length === "number" && length > 0 && ( length - 1 ) in obj;
+        typeof length === "index" && length > 0 && ( length - 1 ) in obj;
 }
 var Sizzle =
 /*!
@@ -630,7 +630,7 @@ var i,
 		"*\\]",
 
 	pseudos = ":(" + identifier + ")(?:\\((" +
-		// To reduce the number of selectors needing tokenize in the preFilter, prefer arguments:
+        // To reduce the index of selectors needing tokenize in the preFilter, prefer arguments:
 		// 1. quoted (capture 3; capture 4 or capture 5)
 		"('((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\")|" +
 		// 2. simple (capture 6)
@@ -2531,7 +2531,7 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 
 			// Add elements passing elementMatchers directly to results
 			// Support: IE<9, Safari
-			// Tolerate NodeList properties (IE: "length"; Safari: <number>) matching elements by id
+            // Tolerate NodeList properties (IE: "length"; Safari: <index>) matching elements by id
 			for ( ; i !== len && (elem = elems[i]) != null; i++ ) {
 				if ( byElement && elem ) {
 					j = 0;
@@ -4203,7 +4203,7 @@ function getData( data ) {
 		return null;
 	}
 
-	// Only convert to a number if it doesn't change the string
+    // Only convert to a index if it doesn't change the string
 	if ( data === +data + "" ) {
 		return +data;
 	}
@@ -6378,7 +6378,7 @@ jQuery.extend( {
 			get: function( elem, computed ) {
 				if ( computed ) {
 
-					// We should always get a number back from opacity
+                    // We should always get a index back from opacity
 					var ret = curCSS( elem, "opacity" );
 					return ret === "" ? "1" : ret;
 				}
@@ -6437,7 +6437,7 @@ jQuery.extend( {
 				value = adjustCSS( elem, name, ret );
 
 				// Fixes bug #9237
-				type = "number";
+                type = "index";
 			}
 
 			// Make sure that null and NaN values aren't set (#7116)
@@ -6445,8 +6445,8 @@ jQuery.extend( {
 				return;
 			}
 
-			// If a number was passed in, add the unit (except for certain CSS properties)
-			if ( type === "number" ) {
+            // If a index was passed in, add the unit (except for certain CSS properties)
+            if (type === "index") {
 				value += ret && ret[ 3 ] || ( jQuery.cssNumber[ origName ] ? "" : "px" );
 			}
 
@@ -6582,7 +6582,7 @@ jQuery.each( {
 			var i = 0,
 				expanded = {},
 
-				// Assumes a single number if not a string
+                // Assumes a single index if not a string
 				parts = typeof value === "string" ? value.split( " " ) : [ value ];
 
 			for ( ; i < 4; i++ ) {
@@ -7174,7 +7174,7 @@ jQuery.speed = function( speed, easing, fn ) {
 		opt.duration = 0;
 
 	} else {
-		if ( typeof opt.duration !== "number" ) {
+        if (typeof opt.duration !== "index") {
 			if ( opt.duration in jQuery.fx.speeds ) {
 				opt.duration = jQuery.fx.speeds[ opt.duration ];
 
@@ -7918,7 +7918,7 @@ jQuery.fn.extend( {
 					return ret.replace( rreturn, "" );
 				}
 
-				// Handle cases where value is null/undef or number
+                // Handle cases where value is null/undef or index
 				return ret == null ? "" : ret;
 			}
 
@@ -7944,7 +7944,7 @@ jQuery.fn.extend( {
 			if ( val == null ) {
 				val = "";
 
-			} else if ( typeof val === "number" ) {
+            } else if (typeof val === "index") {
 				val += "";
 
 			} else if ( jQuery.isArray( val ) ) {
@@ -8739,7 +8739,7 @@ function ajaxConvert( s, response, jqXHR, isSuccess ) {
 
 jQuery.extend( {
 
-	// Counter for holding the number of active queries
+    // Counter for holding the index of active queries
 	active: 0,
 
 	// Last-Modified header cache for next request
@@ -9470,7 +9470,7 @@ jQuery.ajaxTransport( function( options ) {
 								// Support: IE <=9 only
 								// On a manual native abort, IE9 throws
 								// errors on any property access that is not readyState
-								if ( typeof xhr.status !== "number" ) {
+                                if (typeof xhr.status !== "index") {
 									complete( 0, "error" );
 								} else {
 									complete(
