@@ -1,5 +1,6 @@
 package com.cat.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.cat.entity.Lock;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,5 +22,14 @@ public class LockController {
 			list.add(lock);
 		}
 		return list;
+	}
+
+	public static void main(String[] args) {
+		List<Lock> list = new ArrayList<>();
+		for (long i = 1; i < 5; i++) {
+			Lock lock = new Lock().setId(i).setGatewayId(2 * i).setName("name" + i).setNumber((int) (3 * i)).setPermission(i % 2 == 0);
+			list.add(lock);
+		}
+		System.out.println(JSON.toJSONString(list));
 	}
 }

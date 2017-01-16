@@ -187,3 +187,5 @@ $("#data").grid({
         {field: "createTime", title: "创建时间", width: 10}
     ]
 });
+
+var data = [{"createTime": "2017-01-16T20:12:12.427", "gatewayId": 2, "id": 1, "name": "name1", "number": 3, "permission": false, "updateTime": "2017-01-16T20:12:12.428"}, {"createTime": "2017-01-16T20:12:12.428", "gatewayId": 4, "id": 2, "name": "name2", "number": 6, "permission": true, "updateTime": "2017-01-16T20:12:12.428"}, {"createTime": "2017-01-16T20:12:12.428", "gatewayId": 6, "id": 3, "name": "name3", "number": 9, "permission": false, "updateTime": "2017-01-16T20:12:12.428"}, {"createTime": "2017-01-16T20:12:12.428", "gatewayId": 8, "id": 4, "name": "name4", "number": 12, "permission": true, "updateTime": "2017-01-16T20:12:12.428"}];

@@ -77,7 +77,7 @@
     <mvc:resources location="/public/" mapping="/public/**" cache-period="864000"/>
 
     &lt;!&ndash; 定义无需Controller的url<->view直接映射 &ndash;&gt;
-    <mvc:view-controller path="/" view-name="index"/>
+    <mvc:view-controller path="/" view-name="rowIndex"/>
     <mvc:view-controller path="/web/mashup-client" view-name="/web/mashup-client"/>-->
 
     <!-- 将Controller抛出的异常转到特定View, 保持SiteMesh的装饰效果 -->

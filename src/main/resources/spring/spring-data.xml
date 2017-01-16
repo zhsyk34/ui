@@ -36,7 +36,7 @@
     </bean>
 
     <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
-        <constructor-arg index="0" ref="sqlSessionFactory"/>
+        <constructor-arg rowIndex="0" ref="sqlSessionFactory"/>
     </bean>
 
     <bean id="templateSession" class="com.dnake.common.TemplateSession" scope="prototype">
