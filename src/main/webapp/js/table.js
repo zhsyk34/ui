@@ -3,7 +3,7 @@
     const key = "grid", checked = "checked", selected = "selected";
 
     $.fn.grid = function (options, param) {
-        if (typeof options == "string") {
+        if (typeof options === "string") {
             return $.fn.grid.methods[options](this, param);
         }
         options = options || {};
@@ -25,9 +25,6 @@
 
         $(target).html(table);
 
-        const head = table.children("thead");
-        const body = table.children("tbody");
-
         const options = $.data(target, key).options;
 
         //table style
@@ -36,17 +33,17 @@
         });
 
         //row template for fill
-        let tr = rowCell(options);
+        let tr = cell(options);
 
         //fill
-        fillHead(head, options, tr);//TODO:reload checkbox
-        fillBody(body, options, tr);
+        head(table.children("thead"), options, tr);//TODO:reload checkbox
+        body(table.children("tbody"), options, tr);
 
         //event
         event(table, options);
     }
 
-    function rowCell(options) {
+    function cell(options) {
         let tr = "<tr>";
         if (options.rowIndex) {
             tr += "<td data-field=\"" + key + "-index\"></td>";
@@ -61,24 +58,19 @@
         return tr;
     }
 
-    function fillHead(head, options, tr) {
-        let $row = $(tr).data(selected, false);
-        /*row.find("td[data-field ^= " + key + "]").each(function () {
-         const field = $(this).attr("data-field");
-         if (!/^grid-/.test(field)) {
-         $(this).text();
-         }
-         });*/
-
+    function head(wrapper, options, tr) {
+        let $tr = $(tr).data(selected, false);
         $.each(options.columns, function (index, map) {
-            $row.find("td[data-field ^= " + map.field + "]").text(map.title);
+            $tr.find("td[data-field ^= " + map.field + "]").text(map.title);
         });
-        head.html($row);
+        if (options.singleSelect) {
+            $tr.find("td[data-field=grid-check]").empty();
+        }
+        wrapper.html($tr);
     }
 
-    function fillBody(body, options, tr) {
-        console.log("load data...");
-        body.empty();//for reload
+    function body(wrapper, options, tr) {
+        wrapper.empty();//for reload
         if (options.url) {
             $.ajax({
                 url: options.url,
@@ -86,8 +78,8 @@
                 type: options.method,
                 async: options.async,
                 dataType: options.type,
-                success: function (r) {
-                    load(r);
+                success: function (data) {
+                    load(data);
                 }
             });
         } else {
@@ -96,69 +88,77 @@
 
         function load(data) {
             $.each(data, function (i, row) {
-                let $row = $(tr).data(selected, false);
+                let $tr = $(tr).data(selected, false);
 
-                $row.find("td[data-field]").each(function () {
+                $tr.find("td[data-field]").each(function () {
                     const field = $(this).attr("data-field");
                     $(this).text("grid-index" === field ? ++i : row[field]);
                 });
-                body.append($row);
+                wrapper.append($tr);
             });
         }
     }
 
     function event(table, options) {
-        //1.checkbox
-        table.on("change." + key, "thead td[data-field=grid-check] :checkbox", function () {
-            const flag = $(this).parents("tr").data(selected);
-            table.find("tr").each(function () {
-                $(this).data(selected, !flag);
-            });
-            checkCss();
-        });
+        //clean
+        table.off("." + key);
 
-        table.on("change." + key, "tbody td[data-field=grid-check] :checkbox", function () {
+        //1.checkbox
+        const single = options.singleSelect;
+        table.on("change." + key, "td[data-field=grid-check] :checkbox", function () {
             const $tr = $(this).parents("tr");
-            $tr.data(selected, !$tr.data(selected));
+            const flag = $tr.data(selected);
+
+            if ($tr.parent().is("thead")) {
+                console.log("head event");
+                if (!single) {
+                    $(table).find("tr").each(function () {
+                        $(this).data(selected, !flag);
+                    });
+                }
+            } else {
+                console.log("body event");
+                if (single) {
+                    $(table).find("tr").each(function () {
+                        $(this).data(selected, false);
+                    });
+                }
+                $tr.data(selected, !flag);
+            }
+
             checkCss();
         });
 
         //2.row
         if (options.clickSelect) {
             table.on("click." + key, "tbody > tr", function (e) {
-                let checkbox = $(this).find("td[data-field=grid-check] :checkbox");
-                if (e.target === checkbox[0]) {
-                    console.log("input self");
-                    return;
+                if (!$(e.target).is("td[data-field=grid-check] :checkbox")) {
+                    $(this).data(selected, !$(this).data(selected));
+                    checkCss();
                 }
-                $(this).data(selected, !$(this).data(selected));
-
-                checkCss();
-            });
-        } else {
-            table.off("click." + key, "tbody > tr", function () {
             });
         }
 
         function checkCss() {
-            let r = true;
-            table.find("tbody td[data-field=grid-check] :checkbox").each(function () {
-                const $tr = $(this).parents("tr");
-                const flag = $tr.data(selected);
+            let parent = true;
+            //td[data-field=grid-check] :checkbox
+            table.find("tbody > tr").each(function () {
+                const flag = $(this).data(selected);
 
-                $(this).prop(checked, flag);
-                r = r && flag;
-
+                $(this).find("td[data-field=grid-check] :checkbox").prop(checked, flag);
                 if (flag) {
-                    $tr.addClass(options.selectedStyle);
+                    $(this).addClass(options.selectedStyle);
                 } else {
-                    $tr.removeClass(options.selectedStyle);
+                    $(this).removeClass(options.selectedStyle);
                 }
+
+                parent = parent && flag;
             });
 
-            const head = table.find("thead tr");
-            head.find("td[data-field=grid-check] :checkbox").prop(checked, r);
-            if (r) {
+            const head = table.find("thead > tr");
+            head.data(selected, parent);
+            head.find("td[data-field=grid-check] :checkbox").prop(checked, parent);
+            if (parent) {
                 head.addClass(options.selectedStyle);
             } else {
                 head.removeClass(options.selectedStyle);
@@ -189,9 +189,12 @@
         options: function (target) {
             return $.data(target[0], key).options;
         },
-        reload: function (target) {
+        reload: function (target, params) {//TODO
             const options = this.options(target);
-            fillBody(target.find("tbody"), options, rowCell(options));
+            if (params) {
+                options.params = params;
+            }
+            body(target.find("tbody"), options, cell(options));
         }
     };
 }(jQuery);
@@ -200,6 +203,8 @@ const data = [{"createTime": "2017-01-16T20:12:12.427", "gatewayId": 2, "id": 1,
 $("#data").grid({
     // url: "lock/find",
     data: data,
+    singleSelect: false,
+    clickSelect: false,
     columns: [
         {field: "name", title: "名称", width: 10},
         {field: "number", title: "设备号", width: 10},
@@ -210,7 +215,7 @@ $("#data").grid({
 });
 
 $("h1").on("click", function () {
-    alert(1);
+    console.log("reload");
     $("#data").grid("reload");
-    $("#data").grid({clickSelect: false});
+    $("#data").grid({clickSelect: true});
 });
