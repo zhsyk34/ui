@@ -1,0 +1,7 @@
+.table td[data-field=grid-check] {
+    width: 1%;
+}
+
+.table td {
+    text-align: center;
+}

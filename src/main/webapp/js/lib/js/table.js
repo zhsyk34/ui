@@ -110,14 +110,12 @@
             const flag = $tr.data(selected);
 
             if ($tr.parent().is("thead")) {
-                console.log("head event");
                 if (!single) {
                     $(table).find("tr").each(function () {
                         $(this).data(selected, !flag);
                     });
                 }
             } else {
-                console.log("body event");
                 if (single) {
                     $(table).find("tr").each(function () {
                         $(this).data(selected, false);
@@ -132,10 +130,16 @@
         //2.row
         if (options.clickSelect) {
             table.on("click." + key, "tbody > tr", function (e) {
-                if (!$(e.target).is("td[data-field=grid-check] :checkbox")) {
-                    $(this).data(selected, !$(this).data(selected));
-                    checkCss();
-                }
+                /*if (!$(e.target).is("td[data-field=grid-check] :checkbox")) {
+                 if (options.singleSelect) {
+                 $(table).find("tr").each(function () {
+                 $(this).data(selected, false);
+                 });
+                 }
+                 $(this).data(selected, !$(this).data(selected));
+                 checkCss();
+                 }*/
+                $(this).find("td[data-field=grid-check] :checkbox").trigger("click");
             });
         }
 
@@ -198,24 +202,3 @@
         }
     };
 }(jQuery);
-
-const data = [{"createTime": "2017-01-16T20:12:12.427", "gatewayId": 2, "id": 1, "name": "name1", "number": 3, "permission": false, "updateTime": "2017-01-16T20:12:12.428"}, {"createTime": "2017-01-16T20:12:12.428", "gatewayId": 4, "id": 2, "name": "name2", "number": 6, "permission": true, "updateTime": "2017-01-16T20:12:12.428"}, {"createTime": "2017-01-16T20:12:12.428", "gatewayId": 6, "id": 3, "name": "name3", "number": 9, "permission": false, "updateTime": "2017-01-16T20:12:12.428"}, {"createTime": "2017-01-16T20:12:12.428", "gatewayId": 8, "id": 4, "name": "name4", "number": 12, "permission": true, "updateTime": "2017-01-16T20:12:12.428"}];
-$("#data").grid({
-    // url: "lock/find",
-    data: data,
-    singleSelect: false,
-    clickSelect: false,
-    columns: [
-        {field: "name", title: "名称", width: 10},
-        {field: "number", title: "设备号", width: 10},
-        {field: "gatewayId", title: "网关", width: 10},
-        {field: "uuid", title: "序列号", width: 10},
-        {field: "createTime", title: "创建时间", width: 10}
-    ]
-});
-
-$("h1").on("click", function () {
-    console.log("reload");
-    $("#data").grid("reload");
-    $("#data").grid({clickSelect: true});
-});
